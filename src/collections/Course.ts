@@ -60,6 +60,7 @@ const Course: CollectionConfig = {
           },
         ],
       },
+
       validate: (value) => {
         // Custom validation to ensure slug is properly formatted
         if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
@@ -394,7 +395,7 @@ const Course: CollectionConfig = {
             },
           })
 
-          const course_ids = get_order.docs.map((arr) => arr?.course_item?.id as string)
+          const course_ids = get_order.docs.map((arr: any) => arr?.course_item?.id)
 
           const courses = await req.payload.find({
             collection: 'course',

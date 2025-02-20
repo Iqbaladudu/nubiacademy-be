@@ -84,32 +84,35 @@ export default buildConfig({
     {
       path: '/check-coupon/:code',
       method: 'get',
-      handler: async (req) => {
-        const { code } = req.routeParams
+      handler: async (req: PayloadRequest) => {
+        const params = req.routeParams
         try {
-          const get_coupon = await req.payload.find({
-            collection: 'coupons',
-            where: {
-              and: [
-                {
-                  code: {
-                    equals: code,
+          if (params?.code) {
+            const get_coupon = await req.payload.find({
+              collection: 'coupons',
+              where: {
+                and: [
+                  {
+                    code: {
+                      equals: code,
+                    },
                   },
-                },
-                {
-                  is_active: {
-                    equals: true,
+                  {
+                    is_active: {
+                      equals: true,
+                    },
                   },
-                },
-              ],
-            },
-          })
-
-          if (get_coupon.totalDocs > 0) {
-            return NextResponse.json({ ...get_coupon }, { status: 200 })
-          } else {
-            return NextResponse.json({ message: 'Kode kupon tidak ditemukan' }, { status: 404 })
+                ],
+              },
+            })
+            if (get_coupon.totalDocs > 0) {
+              return NextResponse.json({ ...get_coupon }, { status: 200 })
+            } else {
+              return NextResponse.json({ message: 'Kode kupon tidak ditemukan' }, { status: 404 })
+            }
           }
+
+          return NextResponse.json({ message: 'Terjadi kesalahan' }, { status: 401 })
         } catch (error) {
           return NextResponse.json({ message: 'Terjadi kesalahan', error }, { status: 401 })
         }
@@ -118,8 +121,8 @@ export default buildConfig({
     {
       path: '/payment-notification',
       method: 'post',
-      handler: async (req) => {
-        const data = await req.json()
+      handler: async (req: PayloadRequest) => {
+        const data = await req.json!()
         // const signature_key = notification.signature_ke
         const generated_signature = crypto
           .createHash('sha512')
