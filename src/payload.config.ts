@@ -52,8 +52,8 @@ export default buildConfig({
       titleSuffix: '- Nubi Academy',
     },
   },
-  // csrf: ['http://localhost:3000', 'http://localhost:3001'],
-  // cors: ['http://localhost:3000', 'http://localhost:3001'],
+  csrf: [process.env.SERVER_HOST!, process.env.CLIENT!],
+  cors: [process.env.SERVER_HOST!, process.env.CLIENT!],
   collections: [
     Users,
     UploadDocument,

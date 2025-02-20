@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { CollectionConfig } from 'payload'
+import { CollectionConfig, PayloadRequest } from 'payload'
 
 const Course: CollectionConfig = {
   slug: 'course',
