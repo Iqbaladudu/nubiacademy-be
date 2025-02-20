@@ -88,6 +88,7 @@ export default buildConfig({
         const params = req.routeParams
         try {
           if (params?.code) {
+            const code = params.code
             const get_coupon = await req.payload.find({
               collection: 'coupons',
               where: {
