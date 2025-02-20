@@ -50,7 +50,7 @@ export const CourseProgress: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      async ({ data, req, operation }) => {
+      async ({ data, req }) => {
         data.lastAccessedAt = new Date()
 
         const lesson_count = await req.payload.count({

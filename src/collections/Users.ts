@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { CollectionConfig } from 'payload'
 
 const Users: CollectionConfig = {

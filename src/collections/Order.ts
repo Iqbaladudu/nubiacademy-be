@@ -239,7 +239,7 @@ const Order: CollectionConfig = {
                     id: { equals: coupon.id },
                   },
                   data: {
-                    uses: coupon.uses + 1,
+                    uses: (coupon.uses as number) + 1,
                   },
                   overwriteExistingFiles: true,
                   overrideAccess: true,
@@ -289,7 +289,7 @@ const Order: CollectionConfig = {
       },
     ],
     afterChange: [
-      async ({ doc, context, operation, req: { payload, user } }) => {
+      async ({ doc, context, operation, req: { payload } }) => {
         if (operation === 'create') {
           await payload.create({
             collection: 'order_history',
@@ -299,8 +299,8 @@ const Order: CollectionConfig = {
               coupon: doc.coupon_code.id || '',
               change_type: operation,
               original_price: doc.total_amount + context.discount,
-              discounted_price: context.discount || 0,
-              user: context.user_id,
+              discounted_price: (context.discount as number) || 0,
+              user: context.user_id as string,
               status: doc.status,
             },
           })
@@ -328,7 +328,7 @@ const Order: CollectionConfig = {
     },
     read: () => true,
     update: () => true,
-    delete: ({ req }) => {
+    delete: () => {
       return true
     },
   },

@@ -1,51 +1,50 @@
-import { CollectionConfig, PayloadRequest } from 'payload'
-import { v4 as uuidv4 } from 'uuid'
+import { CollectionConfig } from 'payload'
 
-async function isOrderByUser({
-  req,
-  siblingData,
-}: {
-  data?: Partial<any> | undefined
-  doc?: any
-  id?: string | number | undefined
-  req: PayloadRequest
-  siblingData?: Partial<any> | undefined
-}) {
-  let isBelongByUser
-  if (siblingData) {
-    const module_id = await siblingData?.module
-    const getModuleObj = await req.payload.findByID({
-      collection: 'module',
-      depth: 0,
-      id: module_id,
-    })
+// async function isOrderByUser({
+//   req,
+//   siblingData,
+// }: {
+//   data?: Partial<any> | undefined
+//   doc?: any
+//   id?: string | number | undefined
+//   req: PayloadRequest
+//   siblingData?: Partial<any> | undefined
+// }) {
+//   let isBelongByUser
+//   if (siblingData) {
+//     const module_id = await siblingData?.module
+//     const getModuleObj = await req.payload.findByID({
+//       collection: 'module',
+//       depth: 0,
+//       id: module_id,
+//     })
 
-    const course_id = getModuleObj.course
+//     const course_id = getModuleObj.course
 
-    const getUserCourse = await req.payload.find({
-      collection: 'orders',
-      depth: 0,
-      where: {
-        and: [
-          {
-            user: {
-              equals: req.user?.id,
-            },
-          },
-          {
-            course_item: {
-              equals: course_id,
-            },
-          },
-        ],
-      },
-    })
+//     const getUserCourse = await req.payload.find({
+//       collection: 'orders',
+//       depth: 0,
+//       where: {
+//         and: [
+//           {
+//             user: {
+//               equals: req.user?.id,
+//             },
+//           },
+//           {
+//             course_item: {
+//               equals: course_id,
+//             },
+//           },
+//         ],
+//       },
+//     })
 
-    isBelongByUser = getUserCourse.totalDocs > 0
-  }
+//     isBelongByUser = getUserCourse.totalDocs > 0
+//   }
 
-  return Boolean(isBelongByUser || req.user?.collection === 'admin')
-}
+//   return Boolean(isBelongByUser || req.user?.collection === 'admin')
+// }
 
 const CourseContent: CollectionConfig = {
   slug: 'course-content',
@@ -159,7 +158,7 @@ const CourseContent: CollectionConfig = {
 
           const findContentPosition = getContents.docs.findIndex((arr) => arr.id === doc.id)
           const findModulePosition = doc.module.course.modules.findIndex(
-            (arr) => arr.id === doc.module.id,
+            (arr: any) => arr.id === doc.module.id,
           )
 
           if (
@@ -253,7 +252,7 @@ const CourseContent: CollectionConfig = {
               })
 
               if (!is_content_exist) {
-                const update = await req.payload.update({
+                await req.payload.update({
                   collection: 'course-progresses',
                   id: progress_data.id,
                   data: {
@@ -273,7 +272,7 @@ const CourseContent: CollectionConfig = {
                 doc.status = 'DONE'
               }
             } else {
-              const create = await req.payload.create({
+              await req.payload.create({
                 collection: 'course-progresses',
                 data: {
                   user: req.user.id,

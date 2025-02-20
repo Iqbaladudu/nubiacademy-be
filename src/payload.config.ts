@@ -23,12 +23,9 @@ import CourseContent from './collections/CourseContent'
 import crypto from 'crypto'
 import { NextResponse } from 'next/server'
 import { CourseProgress } from './collections/CourseProgress'
-import { v4 as uuidv4 } from 'uuid'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-
-import passport from 'passport'
 
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
@@ -55,8 +52,8 @@ export default buildConfig({
       titleSuffix: '- Nubi Academy',
     },
   },
-  csrf: ['http://localhost:3000', 'http://localhost:3001'],
-  cors: ['http://localhost:3000', 'http://localhost:3001'],
+  // csrf: ['http://localhost:3000', 'http://localhost:3001'],
+  // cors: ['http://localhost:3000', 'http://localhost:3001'],
   collections: [
     Users,
     UploadDocument,
@@ -116,35 +113,6 @@ export default buildConfig({
         } catch (error) {
           return NextResponse.json({ message: 'Terjadi kesalahan', error }, { status: 401 })
         }
-      },
-    },
-    {
-      path: '/check-order/:courseId/:userId',
-      method: 'get',
-      handler: async (req) => {
-        const { courseId } = req.routeParams
-
-        if (req.user) {
-          const get_order = await req.payload.find({
-            collection: 'orders',
-            where: {
-              and: [
-                {
-                  course_item: {
-                    equals: courseId,
-                  },
-                },
-                {
-                  user: {
-                    equals: req.user?.id,
-                  },
-                },
-              ],
-            },
-          })
-        }
-
-        return Response.json({ haha: 'haha' })
       },
     },
     {
