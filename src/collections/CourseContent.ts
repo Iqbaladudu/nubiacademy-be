@@ -142,6 +142,11 @@ const CourseContent: CollectionConfig = {
                     equals: doc.module.course.id,
                   },
                 },
+                {
+                  status: {
+                    equals: 'done',
+                  },
+                },
               ],
             },
           })

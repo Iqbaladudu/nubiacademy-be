@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server'
 import { APIError, CollectionConfig } from 'payload'
 import { splitName } from 'utils'
 
@@ -135,6 +136,41 @@ const Order: CollectionConfig = {
         update: () => {
           return false
         },
+      },
+    },
+  ],
+  endpoints: [
+    {
+      path: '/me',
+      method: 'get',
+      handler: async (req) => {
+        if (req.user) {
+          const user = req.user.id
+          const my_order = await req.payload.find({
+            user: req.user,
+            collection: 'orders',
+            depth: 0,
+            where: {
+              user: {
+                equals: user,
+              },
+            },
+          })
+
+          return NextResponse.json(
+            {
+              ...my_order,
+            },
+            { status: 200 },
+          )
+        }
+
+        return NextResponse.json(
+          {
+            message: 'Terdapat kesalahan',
+          },
+          { status: 401 },
+        )
       },
     },
   ],

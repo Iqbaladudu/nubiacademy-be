@@ -229,6 +229,11 @@ const Course: CollectionConfig = {
                     equals: doc.id,
                   },
                 },
+                {
+                  status: {
+                    equals: 'done',
+                  },
+                },
               ],
             },
           })

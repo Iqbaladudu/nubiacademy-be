@@ -52,6 +52,10 @@ export default buildConfig({
       titleSuffix: '- Nubi Academy',
     },
   },
+  localization: {
+    locales: ['id'],
+    defaultLocale: 'id',
+  },
   csrf: [process.env.SERVER_HOST!, process.env.CLIENT_HOST!],
   cors: [process.env.SERVER_HOST!, process.env.CLIENT_HOST!],
   collections: [
