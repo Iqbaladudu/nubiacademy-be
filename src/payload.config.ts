@@ -30,19 +30,6 @@ import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 
 export default buildConfig({
-  email: nodemailerAdapter({
-    defaultFromAddress: 'noreply@nubiacademy.id',
-    defaultFromName: 'Nubi Academy',
-    skipVerify: true,
-    transportOptions: {
-      host: process.env.SMTP_HOST,
-      port: 465,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    },
-  }),
   admin: {
     user: Admin.slug,
     importMap: {
@@ -171,4 +158,5 @@ export default buildConfig({
       },
     },
   ],
+  email: nodemailerAdapter(),
 })
