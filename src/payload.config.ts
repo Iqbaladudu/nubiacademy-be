@@ -158,5 +158,16 @@ export default buildConfig({
       },
     },
   ],
-  email: nodemailerAdapter(),
+  email: nodemailerAdapter({
+    defaultFromAddress: 'norepy@nubiacademy.id',
+    defaultFromName: 'Nubi Academy',
+    transportOptions: {
+      host: process.env.SMTP_HOST,
+      port: 587,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    },
+  }),
 })
