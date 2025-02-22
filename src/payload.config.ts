@@ -1,6 +1,5 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
@@ -28,6 +27,7 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 
 export default buildConfig({
   email: nodemailerAdapter({
@@ -56,6 +56,17 @@ export default buildConfig({
     locales: ['id'],
     defaultLocale: 'id',
   },
+  plugins: [
+    uploadthingStorage({
+      collections: {
+        'upload-document': true,
+      },
+      options: {
+        token: process.env.UPLOADTHING_TOKEN,
+        acl: 'public-read',
+      },
+    }),
+  ],
   csrf: [process.env.SERVER_HOST!, process.env.CLIENT_HOST!],
   cors: [process.env.SERVER_HOST!, process.env.CLIENT_HOST!],
   collections: [
@@ -160,5 +171,4 @@ export default buildConfig({
       },
     },
   ],
-  plugins: [payloadCloudPlugin()],
 })

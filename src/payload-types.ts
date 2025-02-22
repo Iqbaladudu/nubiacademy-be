@@ -135,6 +135,7 @@ export interface User {
 export interface UploadDocument {
   id: string;
   name?: string | null;
+  _key?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -531,6 +532,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface UploadDocumentSelect<T extends boolean = true> {
   name?: T;
+  _key?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

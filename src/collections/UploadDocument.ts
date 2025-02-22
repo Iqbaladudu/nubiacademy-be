@@ -15,6 +15,7 @@ const UploadDocument: CollectionConfig = {
   upload: {
     staticDir: '/assets/documents',
     mimeTypes: ['*'],
+    disableLocalStorage: true,
   },
   fields: [
     {
@@ -22,6 +23,16 @@ const UploadDocument: CollectionConfig = {
       type: 'text',
     },
   ],
+
+  hooks: {
+    afterRead: [
+      async ({ doc }) => {
+        doc.url = `https://${process.env.UPLOADTHING_APP_ID}.ufs.sh/f/${doc._key}`
+
+        return { ...doc }
+      },
+    ],
+  },
 }
 
 export default UploadDocument
