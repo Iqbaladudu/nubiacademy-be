@@ -161,6 +161,7 @@ export default buildConfig({
   email: nodemailerAdapter({
     defaultFromAddress: 'noreply@nubiacademy.id',
     defaultFromName: 'Nubi Academy',
+    skipVerify: true,
     transportOptions: {
       host: process.env.SMTP_HOST,
       port: 465,
