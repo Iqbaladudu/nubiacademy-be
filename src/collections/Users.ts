@@ -1,3 +1,5 @@
+import forgotPassword from '@/template/forgotPassword'
+import verifyEmail from '@/template/verifyEmail'
 import { CollectionConfig } from 'payload'
 
 const Users: CollectionConfig = {
@@ -6,7 +8,33 @@ const Users: CollectionConfig = {
     singular: 'User',
     plural: 'Users',
   },
-  auth: true,
+  auth: {
+    verify: {
+      generateEmailHTML: (arr) => {
+        const verifyEmailUrl = `${process.env.CLIENT_HOST}/verify?token=${arr.token}`
+
+        return verifyEmail({
+          user: arr?.user?.username as string,
+          verifyUrl: verifyEmailUrl,
+        })
+      },
+      generateEmailSubject: (arr) => {
+        return `${arr?.user.fullname}, Selamat Datang di Nubi Academy!`
+      },
+    },
+    forgotPassword: {
+      generateEmailHTML: (arr) => {
+        const resetPasswordUrl = `${process.env.CLIENT_HOST}/atur-ulang-sandi?token=${arr?.token}`
+        return forgotPassword({
+          user: arr?.user?.username as string,
+          resetPasswordUrl: resetPasswordUrl,
+        })
+      },
+      generateEmailSubject: (arr) => {
+        return `${arr?.user.username}, Atur Ulang Kata Sandi Kamu!`
+      },
+    },
+  },
   admin: {
     useAsTitle: 'username',
   },

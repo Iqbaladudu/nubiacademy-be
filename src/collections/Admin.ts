@@ -1,8 +1,23 @@
+import forgotPassword from '@/template/forgotPassword'
 import { CollectionConfig } from 'payload'
 
 const Admin: CollectionConfig = {
   slug: 'admin',
-  auth: true,
+  auth: {
+    forgotPassword: {
+      generateEmailHTML: (arr) => {
+        const resetPasswordUrl = `${process.env.CLIENT_HOST}/api/reset-password?token=${arr?.token}`
+
+        return forgotPassword({
+          user: arr?.user?.username as string,
+          resetPasswordUrl: resetPasswordUrl,
+        })
+      },
+      generateEmailSubject: (arr) => {
+        return `${arr?.user.username}, Atur Ulang Kata Sandi Kamu!`
+      },
+    },
+  },
   admin: {
     useAsTitle: 'username',
   },
