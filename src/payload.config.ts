@@ -30,6 +30,7 @@ import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 
 import Users from './collections/Users'
 import Events from "@/collections/Event";
+import Benefits from "@/collections/Benefit";
 
 export default buildConfig({
   admin: {
@@ -59,6 +60,8 @@ export default buildConfig({
   csrf: [process.env.SERVER_HOST!, process.env.CLIENT_HOST!],
   cors: [process.env.SERVER_HOST!, process.env.CLIENT_HOST!],
   collections: [
+    Events,
+      Benefits,
     Users,
     UploadDocument,
     Subscription,
@@ -72,7 +75,6 @@ export default buildConfig({
     Module,
     CourseContent,
     CourseProgress,
-    Events,
   ],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [...defaultFeatures, SlateToLexicalFeature({})],

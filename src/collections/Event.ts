@@ -1,172 +1,213 @@
 import { CollectionConfig } from 'payload'
 
 const Events: CollectionConfig = {
-    slug: 'events',
-    admin: {
-        useAsTitle: 'title',
+  slug: 'events',
+  admin: {
+    useAsTitle: 'title',
+  },
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      label: 'Event Title',
+      required: true,
     },
-    fields: [
+    {
+      name: 'category',
+      type: 'select',
+      label: 'Event Category',
+      options: [
         {
-            name: 'title',
-            type: 'text',
-            label: 'Event Title',
-            required: true,
+          label: 'Workshop',
+          value: 'workshop',
         },
         {
-            name: 'category',
-            type: 'select',
-            label: 'Event Category',
-            options: [
-                {
-                    label: 'Workshop',
-                    value: 'workshop',
-                },
-                {
-                    label: 'Bootcamp',
-                    value: 'bootcamp',
-                },
-            ],
-            required: true,
+          label: 'Bootcamp',
+          value: 'bootcamp',
+        },
+      ],
+      required: true,
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      label: 'Description',
+    },
+    {
+      name: 'description_long',
+      type: 'richText',
+      label: 'Full description',
+    },
+    {
+      name: 'date',
+      type: 'date',
+      label: 'Event Date',
+      required: true,
+      admin: {
+        date: {
+          pickerAppearance: 'dayAndTime',
+        },
+      },
+    },
+    {
+      name: 'location',
+      type: 'text',
+      label: 'Location',
+    },
+    {
+      name: 'pricing',
+      type: 'group',
+      label: 'Pricing',
+      fields: [
+        {
+          name: 'originalPrice',
+          type: 'number',
+          label: 'Original Price (in IDR)',
+          required: true,
+          min: 0,
+          admin: {
+            step: 1000,
+          },
         },
         {
-            name: 'description',
-            type: 'textarea',
-            label: 'Description',
+          name: 'discountedPrice',
+          type: 'number',
+          label: 'Discounted Price (in IDR)',
+          min: 0,
+          admin: {
+            step: 1000,
+            description: 'Leave empty if no discount applies',
+          },
         },
         {
-            name: "description_long",
-            type: "richText",
-            label: "Full description"
+          name: 'isDiscounted',
+          type: 'checkbox',
+          label: 'Enable Discount',
+          defaultValue: false,
+        },
+      ],
+    },
+    {
+      name: 'capacity',
+      type: 'number',
+      label: 'Maximum Capacity',
+      min: 1,
+      admin: {
+        step: 1,
+      },
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      label: 'Event Poster',
+      relationTo: 'upload-document',
+    },
+    {
+      name: 'status',
+      type: 'select',
+      label: 'Event Status',
+      options: [
+        { label: 'Draft', value: 'draft' },
+        { label: 'Published', value: 'published' },
+        { label: 'Cancelled', value: 'cancelled' },
+      ],
+      defaultValue: 'draft',
+    },
+    {
+      name: 'highlights',
+      type: 'array',
+      label: 'Event Highlights',
+      fields: [
+        {
+          name: 'highlight',
+          type: 'text',
+          label: 'Highlight Item',
+          required: true,
+        },
+      ],
+      admin: {
+        description: 'Add key features or highlights of the event',
+      },
+    },
+    {
+      name: 'rounds',
+      type: 'array',
+      label: 'Event Rounds/Sessions/Topics',
+      fields: [
+        {
+          name: 'roundName',
+          type: 'text',
+          label: 'Round Name',
+          required: true,
         },
         {
-            name: 'date',
-            type: 'date',
-            label: 'Event Date',
-            required: true,
-            admin: {
-                date: {
-                    pickerAppearance: 'dayAndTime',
-                },
+          name: 'startTime',
+          type: 'date',
+          label: 'Start Time',
+          required: true,
+          admin: {
+            date: {
+              pickerAppearance: 'dayAndTime',
             },
+          },
         },
         {
-            name: 'location',
-            type: 'text',
-            label: 'Location',
-        },
-        {
-            name: 'pricing',
-            type: 'group',
-            label: 'Pricing',
-            fields: [
-                {
-                    name: 'originalPrice',
-                    type: 'number',
-                    label: 'Original Price (in IDR)',
-                    required: true,
-                    min: 0,
-                    admin: {
-                        step: 1000,
-                    },
-                },
-                {
-                    name: 'discountedPrice',
-                    type: 'number',
-                    label: 'Discounted Price (in IDR)',
-                    min: 0,
-                    admin: {
-                        step: 1000,
-                        description: 'Leave empty if no discount applies',
-                    },
-                },
-                {
-                    name: 'isDiscounted',
-                    type: 'checkbox',
-                    label: 'Enable Discount',
-                    defaultValue: false,
-                },
-            ],
-        },
-        {
-            name: 'capacity',
-            type: 'number',
-            label: 'Maximum Capacity',
-            min: 1,
-            admin: {
-                step: 1,
+          name: 'endTime',
+          type: 'date',
+          label: 'End Time',
+          admin: {
+            date: {
+              pickerAppearance: 'dayAndTime',
             },
+          },
         },
-        {
-            name: 'image',
-            type: 'upload',
-            label: 'Event Poster',
-            relationTo: "upload-document",
-        },
-        {
-            name: 'status',
-            type: 'select',
-            label: 'Event Status',
-            options: [
-                {label: 'Draft', value: 'draft'},
-                {label: 'Published', value: 'published'},
-                {label: 'Cancelled', value: 'cancelled'},
-            ],
-            defaultValue: 'draft',
-        },
-        {
-            name: 'highlights',
-            type: 'array',
-            label: 'Event Highlights',
-            fields: [
-                {
-                    name: 'highlight',
-                    type: 'text',
-                    label: 'Highlight Item',
-                    required: true,
+      ],
+      admin: {
+        description: 'Add rounds or sessions for the event with their schedules',
+      },
+    },
+  ],
+  hooks: {
+    afterRead: [
+      async ({ doc, req }) => {
+        const user = req.user?.id
+        const checkUserOwnership = await req.payload.find({
+          collection: 'orders',
+          depth: 0,
+          where: {
+            and: [
+              {
+                user: {
+                  equals: user,
                 },
+              },
+              {
+                event_item: {
+                  equals: doc.id,
+                },
+              },
             ],
-            admin: {
-                description: 'Add key features or highlights of the event',
+          },
+        })
+
+        if (checkUserOwnership.docs.length > 0) {
+          const getBenefits = await req.payload.find({
+            collection: 'benefits',
+            depth: 0,
+            where: {
+              event: {
+                equals: doc.id,
+              },
             },
-        },
-        {
-            name: 'rounds',
-            type: 'array',
-            label: 'Event Rounds/Sessions/Topics',
-            fields: [
-                {
-                    name: 'roundName',
-                    type: 'text',
-                    label: 'Round Name',
-                    required: true,
-                },
-                {
-                    name: 'startTime',
-                    type: 'date',
-                    label: 'Start Time',
-                    required: true,
-                    admin: {
-                        date: {
-                            pickerAppearance: 'dayAndTime',
-                        },
-                    },
-                },
-                {
-                    name: 'endTime',
-                    type: 'date',
-                    label: 'End Time',
-                    admin: {
-                        date: {
-                            pickerAppearance: 'dayAndTime',
-                        },
-                    },
-                },
-            ],
-            admin: {
-                description: 'Add rounds or sessions for the event with their schedules',
-            },
-        },
+          })
+
+          if (getBenefits.docs.length > 0) {
+            return { ...doc, benefits: { ...getBenefits.docs } }
+          }
+        }
+      },
     ],
+  },
 }
 
-export default Events;
+export default Events

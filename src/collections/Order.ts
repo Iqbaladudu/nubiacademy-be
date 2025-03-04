@@ -32,7 +32,7 @@ const Order: CollectionConfig = {
       name: "event_item",
       label: "Nama event",
       type: "relationship",
-      relationTo: "event",
+      relationTo: "events",
     },
     {
       name: 'course_item',

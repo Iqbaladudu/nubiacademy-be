@@ -67,6 +67,8 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    events: Event;
+    benefits: Benefit;
     users: User;
     'upload-document': UploadDocument;
     subscription: Subscription;
@@ -86,6 +88,8 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    events: EventsSelect<false> | EventsSelect<true>;
+    benefits: BenefitsSelect<false> | BenefitsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'upload-document': UploadDocumentSelect<false> | UploadDocumentSelect<true>;
     subscription: SubscriptionSelect<false> | SubscriptionSelect<true>;
@@ -159,6 +163,110 @@ export interface AdminAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: string;
+  title: string;
+  category: 'workshop' | 'bootcamp';
+  description?: string | null;
+  description_long?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  date: string;
+  location?: string | null;
+  pricing: {
+    originalPrice: number;
+    /**
+     * Leave empty if no discount applies
+     */
+    discountedPrice?: number | null;
+    isDiscounted?: boolean | null;
+  };
+  capacity?: number | null;
+  image?: (string | null) | UploadDocument;
+  status?: ('draft' | 'published' | 'cancelled') | null;
+  /**
+   * Add key features or highlights of the event
+   */
+  highlights?:
+    | {
+        highlight: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Add rounds or sessions for the event with their schedules
+   */
+  rounds?:
+    | {
+        roundName: string;
+        startTime: string;
+        endTime?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "upload-document".
+ */
+export interface UploadDocument {
+  id: string;
+  name?: string | null;
+  _key?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "benefits".
+ */
+export interface Benefit {
+  id: string;
+  event?: (string | null) | Event;
+  /**
+   * Add custom benefits or bonuses for event participants
+   */
+  'benefits-item'?:
+    | {
+        benefitType: 'link' | 'voucher' | 'message';
+        benefitValue?: string | null;
+        /**
+         * Optional description for this benefit
+         */
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -187,26 +295,6 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "upload-document".
- */
-export interface UploadDocument {
-  id: string;
-  name?: string | null;
-  _key?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "subscription".
  */
 export interface Subscription {
@@ -227,6 +315,7 @@ export interface Order {
   id: string;
   order_number: string;
   subscription_type?: (string | null) | Subscription;
+  event_item?: (string | null) | Event;
   course_item?: (string | null) | Course;
   user: string | User;
   coupon_code?: (string | null) | Coupon;
@@ -456,6 +545,14 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
+        relationTo: 'events';
+        value: string | Event;
+      } | null)
+    | ({
+        relationTo: 'benefits';
+        value: string | Benefit;
+      } | null)
+    | ({
         relationTo: 'users';
         value: string | User;
       } | null)
@@ -561,6 +658,61 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  title?: T;
+  category?: T;
+  description?: T;
+  description_long?: T;
+  date?: T;
+  location?: T;
+  pricing?:
+    | T
+    | {
+        originalPrice?: T;
+        discountedPrice?: T;
+        isDiscounted?: T;
+      };
+  capacity?: T;
+  image?: T;
+  status?: T;
+  highlights?:
+    | T
+    | {
+        highlight?: T;
+        id?: T;
+      };
+  rounds?:
+    | T
+    | {
+        roundName?: T;
+        startTime?: T;
+        endTime?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "benefits_select".
+ */
+export interface BenefitsSelect<T extends boolean = true> {
+  event?: T;
+  'benefits-item'?:
+    | T
+    | {
+        benefitType?: T;
+        benefitValue?: T;
+        description?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -624,6 +776,7 @@ export interface SubscriptionSelect<T extends boolean = true> {
 export interface OrdersSelect<T extends boolean = true> {
   order_number?: T;
   subscription_type?: T;
+  event_item?: T;
   course_item?: T;
   user?: T;
   coupon_code?: T;
