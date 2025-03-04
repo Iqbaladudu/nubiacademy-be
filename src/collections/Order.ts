@@ -29,6 +29,12 @@ const Order: CollectionConfig = {
       relationTo: 'subscription',
     },
     {
+      name: "event_item",
+      label: "Nama event",
+      type: "relationship",
+      relationTo: "event",
+    },
+    {
       name: 'course_item',
       label: 'Nama Kursus',
       type: 'relationship',
