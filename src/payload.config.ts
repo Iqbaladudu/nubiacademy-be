@@ -5,7 +5,6 @@ import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
-import Users from './collections/Users'
 import UploadDocument from './collections/UploadDocument'
 import Subscription from './collections/Subscription'
 import Order from './collections/Order'
@@ -28,6 +27,8 @@ const dirname = path.dirname(filename)
 
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
+
+import Users from './collections/Users'
 
 export default buildConfig({
   admin: {

@@ -384,10 +384,11 @@ const Course: CollectionConfig = {
           const user = req.user.id
           const get_order = await req.payload.find({
             collection: 'orders',
+            depth: 0,
             where: {
               and: [
                 {
-                  'user.id': {
+                  user: {
                     equals: user,
                   },
                 },
@@ -400,7 +401,7 @@ const Course: CollectionConfig = {
             },
           })
 
-          const course_ids = get_order.docs.map((arr: any) => arr?.course_item?.id)
+          const course_ids = get_order.docs.map((arr: any) => arr?.course_item)
 
           const courses = await req.payload.find({
             collection: 'course',
