@@ -29,6 +29,7 @@ import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 
 import Users from './collections/Users'
+import Events from "@/collections/Event";
 
 export default buildConfig({
   admin: {
@@ -71,6 +72,7 @@ export default buildConfig({
     Module,
     CourseContent,
     CourseProgress,
+    Events,
   ],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [...defaultFeatures, SlateToLexicalFeature({})],
