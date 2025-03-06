@@ -200,33 +200,51 @@ const Order: CollectionConfig = {
             console.log()
             context.user_id = data.user
             if (
-              data.item_to_purchase.value
-                ? data.item_to_purchase.value.toString()
-                : data.item_to_purchase
+              data.item_to_purchase
             ) {
               switch (data.item_to_purchase_type) {
                 case 'course':
+                  if (req.user?.collection === "admin") {
                   const course = await req.payload.findByID({
                     collection: 'course',
-                    id: data.item_to_purchase.value
-                      ? data.item_to_purchase.value.toString()
-                      : data.item_to_purchase,
+                    id: data.item_to_purchase.value.toString(),
                   })
                   data.original_price = course.price
                   if (course && course.price) {
                     total += course.price
                   }
-                case 'event':
-                  const event = await req.payload.findByID({
-                    collection: 'events',
-                    id: data.item_to_purchase.value
-                      ? data.item_to_purchase.value.toString()
-                      : data.item_to_purchase,
-                  })
-                  data.original_price = event.pricing.discountedPrice
-                  if (event) {
-                    total += event.pricing.discountedPrice!
+                  } else if (req.user?.collection === "users") {
+                    const course = await req.payload.findByID({
+                      collection: 'course',
+                      id: data.item_to_purchase,
+                    })
+                    data.original_price = course.price
+                    if (course && course.price) {
+                      total += course.price
+                    }
                   }
+                  return
+                case 'event':
+                  if (req.user?.collection === "admin") {
+                    const event = await req.payload.findByID({
+                      collection: 'events',
+                      id: data.item_to_purchase.value.toString(),
+                    })
+                    if (event && event.pricing.discountedPrice) {
+                    data.original_price = event.pricing.discountedPrice
+                      total += data.original_price
+                    }
+                  } else if (req.user?.collection === "users") {
+                    const event = await req.payload.findByID({
+                      collection: 'events',
+                      id: data.item_to_purchase,
+                    })
+                    if (event && event.pricing.discountedPrice) {
+                      data.original_price = event.pricing.discountedPrice
+                      total += data.original_price
+                    }
+                  }
+                  return
               }
             }
 
@@ -308,7 +326,7 @@ const Order: CollectionConfig = {
           } catch (e) {
             console.log(e)
           }
-        }
+         }
       },
     ],
     afterChange: [
@@ -353,8 +371,8 @@ const Order: CollectionConfig = {
     update: () => true,
     delete: () => {
       return true
-    },
-  },
+    }
+  }
 }
 
 export default Order
