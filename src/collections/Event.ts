@@ -13,6 +13,43 @@ const Events: CollectionConfig = {
       required: true,
     },
     {
+      name: 'slug',
+      label: 'Slug',
+      type: 'text',
+      admin: {
+        hidden: true,
+      },
+      unique: true,
+      required: false,
+      hooks: {
+        beforeValidate: [
+          ({ data, siblingData }) => {
+            // If there's data for the referenced field, generate the slug
+            if (siblingData['name']) {
+              return siblingData['name']
+                .toLowerCase()
+                .replace(/ /g, '-')
+                .replace(/[^\w-]+/g, '')
+                .replace(/--+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '')
+            }
+
+            // Return null if no data was found
+            return null
+          },
+        ],
+      },
+
+      validate: (value) => {
+        // Custom validation to ensure slug is properly formatted
+        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
+          return 'Slug must contain only lowercase letters, numbers, and hyphens'
+        }
+        return true
+      },
+    },
+    {
       name: 'category',
       type: 'select',
       label: 'Event Category',
