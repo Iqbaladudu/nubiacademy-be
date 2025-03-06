@@ -54,7 +54,7 @@ const Module: CollectionConfig = {
           where: {
             and: [
               {
-                course_item: {
+                item_to_purchase: {
                   equals: doc.course,
                 },
               },

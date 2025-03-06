@@ -16,7 +16,7 @@ const OrderHistory: CollectionConfig = {
       name: 'order',
       type: 'relationship',
       relationTo: 'orders',
-      required: true,
+      required: false,
       label: 'Order',
     },
     {

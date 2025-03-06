@@ -225,7 +225,7 @@ const Course: CollectionConfig = {
                   },
                 },
                 {
-                  course_item: {
+                  item_to_purchase: {
                     equals: doc.id,
                   },
                 },
@@ -401,7 +401,7 @@ const Course: CollectionConfig = {
             },
           })
 
-          const course_ids = get_order.docs.map((arr: any) => arr?.course_item)
+          const course_ids = get_order.docs.map((arr: any) => arr?.item_to_purchase)
 
           const courses = await req.payload.find({
             collection: 'course',

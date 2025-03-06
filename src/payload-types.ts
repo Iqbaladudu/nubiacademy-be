@@ -254,7 +254,7 @@ export interface Benefit {
   'benefits-item'?:
     | {
         benefitType: 'link' | 'voucher' | 'message';
-        benefitValue?: string | null;
+        benefitTitle: string;
         /**
          * Optional description for this benefit
          */
@@ -315,8 +315,16 @@ export interface Order {
   id: string;
   order_number: string;
   subscription_type?: (string | null) | Subscription;
-  event_item?: (string | null) | Event;
-  course_item?: (string | null) | Course;
+  item_to_purchase?:
+    | ({
+        relationTo: 'course';
+        value: string | Course;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: string | Event;
+      } | null);
+  item_to_purchase_type: 'course' | 'event';
   user: string | User;
   coupon_code?: (string | null) | Coupon;
   original_price?: number | null;
@@ -455,7 +463,7 @@ export interface Admin {
  */
 export interface OrderHistory {
   id: string;
-  order: string | Order;
+  order?: (string | null) | Order;
   order_number: string;
   coupon?: (string | null) | Coupon;
   status: 'done' | 'pending' | 'cancelled';
@@ -704,7 +712,7 @@ export interface BenefitsSelect<T extends boolean = true> {
     | T
     | {
         benefitType?: T;
-        benefitValue?: T;
+        benefitTitle?: T;
         description?: T;
         id?: T;
       };
@@ -776,8 +784,8 @@ export interface SubscriptionSelect<T extends boolean = true> {
 export interface OrdersSelect<T extends boolean = true> {
   order_number?: T;
   subscription_type?: T;
-  event_item?: T;
-  course_item?: T;
+  item_to_purchase?: T;
+  item_to_purchase_type?: T;
   user?: T;
   coupon_code?: T;
   original_price?: T;

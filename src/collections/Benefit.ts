@@ -32,24 +32,15 @@ const Benefits: CollectionConfig = {
                     ],
                 },
                 {
-                    name: 'benefitValue',
+                    name: 'benefitTitle',
                     type: 'text',
-                    label: 'Benefit Value',
+                    label: 'Benefit title',
                     required: true,
-                    admin: {
-                        condition: (data) => ['link', 'voucher', 'message'].includes(data?.benefitType),
-                    },
-                    validate: (value, { siblingData }) => {
-                        if (siblingData.benefitType === 'link' && value && !value.match(/^https?:\/\/.+/)) {
-                            return 'Please enter a valid URL starting with http:// or https://';
-                        }
-                        return true;
-                    },
                 },
                 {
                     name: 'description',
                     type: 'textarea',
-                    label: 'Benefit Description',
+                    label: 'Benefit description or value',
                     admin: {
                         description: 'Optional description for this benefit',
                     },

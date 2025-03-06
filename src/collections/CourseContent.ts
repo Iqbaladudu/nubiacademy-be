@@ -138,7 +138,7 @@ const CourseContent: CollectionConfig = {
                   },
                 },
                 {
-                  course_item: {
+                  item_to_purchase: {
                     equals: doc.module.course.id,
                   },
                 },

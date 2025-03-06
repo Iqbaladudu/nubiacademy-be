@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { APIError, CollectionConfig } from 'payload'
+import { CollectionConfig } from 'payload'
 import { splitName } from 'utils'
 
 const Order: CollectionConfig = {
@@ -29,16 +29,10 @@ const Order: CollectionConfig = {
       relationTo: 'subscription',
     },
     {
-      name: "event_item",
-      label: "Nama event",
-      type: "relationship",
-      relationTo: "events",
-    },
-    {
-      name: 'course_item',
-      label: 'Nama Kursus',
+      name: 'item_to_purchase',
+      label: 'Item yang dipesan',
       type: 'relationship',
-      relationTo: 'course',
+      relationTo: ['course', 'events'],
       access: {
         read: ({ req }) => {
           return Boolean(req.user)
@@ -50,6 +44,17 @@ const Order: CollectionConfig = {
           return Boolean(user)
         },
       },
+    },
+    {
+      name: 'item_to_purchase_type',
+      label: 'Jenis item yang dipesan',
+      type: 'select',
+      required: true,
+      defaultValue: 'course',
+      options: [
+        { label: 'Kursus', value: 'course' },
+        { label: 'Event', value: 'event' },
+      ],
     },
     {
       name: 'user',
@@ -181,77 +186,48 @@ const Order: CollectionConfig = {
     },
   ],
   hooks: {
-    afterRead: [
-      async ({ doc, req }) => {
-        if (req.user?.collection === 'users') {
-          return {
-            ...doc,
-            course_item: {
-              id: doc.course_item.id,
-            },
-            user: {
-              id: doc.user.id,
-            },
-            coupon_code: {
-              id: doc.coupon_code,
-            },
-          }
-        }
-
-        return { ...doc }
-      },
-    ],
     beforeChange: [
       async ({ data, operation, context, req }) => {
         if (operation === 'create') {
-          data.user =
-            req.user?.collection === 'admin'
-              ? data.user.id
-                ? data.user.id
-                : data.user
-              : req.user?.id
-                ? req.user.id
-                : req.user
-          const order = req.payload.find({
-            collection: 'orders',
-            where: {
-              and: [
-                {
-                  'user.id': {
-                    equals: data.user,
-                  },
-                },
-                {
-                  'course_item.id': {
-                    equals: data.course_item,
-                  },
-                },
-              ],
-            },
-          })
+          try {
+            data.user =
+              req.user?.collection === 'admin' ? data.user : req.user?.id ? req.user.id : req.user
 
-          if ((await order).totalDocs > 0)
-            throw new APIError('Kamu telah membeli kursus ini', 500, {
-              details: {
-                message: 'Kamu telah membeli kursus ini',
-              },
-            })
-
-          let total = 0
-          let discount = 0
-          let coupon
-          context.discount = null
-          context.user_id = data.user
-          if (data.course_item) {
-            const course = await req.payload.findByID({
-              collection: 'course',
-              id: `${data.course_item}`,
-            })
-
-            data.original_price = course?.price
-
-            if (course && course.price) {
-              total += course.price
+            let total = 0
+            let discount = 0
+            let coupon
+            context.discount = null
+            console.log()
+            context.user_id = data.user
+            if (
+              data.item_to_purchase.value
+                ? data.item_to_purchase.value.toString()
+                : data.item_to_purchase
+            ) {
+              switch (data.item_to_purchase_type) {
+                case 'course':
+                  const course = await req.payload.findByID({
+                    collection: 'course',
+                    id: data.item_to_purchase.value
+                      ? data.item_to_purchase.value.toString()
+                      : data.item_to_purchase,
+                  })
+                  data.original_price = course.price
+                  if (course && course.price) {
+                    total += course.price
+                  }
+                case 'event':
+                  const event = await req.payload.findByID({
+                    collection: 'events',
+                    id: data.item_to_purchase.value
+                      ? data.item_to_purchase.value.toString()
+                      : data.item_to_purchase,
+                  })
+                  data.original_price = event.pricing.discountedPrice
+                  if (event) {
+                    total += event.pricing.discountedPrice!
+                  }
+              }
             }
 
             if (data.coupon_code) {
@@ -287,47 +263,52 @@ const Order: CollectionConfig = {
                   overrideAccess: true,
                 })
               }
+
+              data.total_amount = total
+              context.discount = discount || 0
+
+              const usr = await req.payload.findByID({
+                collection: 'users',
+                id: data.user,
+              })
+
+              if (data.order_number && data.total_amount > 0) {
+                const res = await fetch(`${process.env.MIDTRANS_API_URL}`, {
+                  method: 'POST',
+                  headers: {
+                    Accept: 'application/json',
+                    Authorization: `Basic ${process.env.AUTH_TOKEN}`,
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    transaction_details: {
+                      order_id: `${data.order_number}`,
+                      gross_amount: Number(data.total_amount),
+                    },
+                    customer_details: {
+                      first_name: `${splitName(usr.fullname)}`,
+                      last_name: `${splitName(usr.fullname)}`,
+                      email: `${usr.email}`,
+                      phone: `${usr.phone}`,
+                    },
+                  }),
+                }).then((res) => {
+                  return res.json()
+                })
+
+                data.payment_token = res.token
+                data.payment_redirect_url = res.redirect_url
+              } else if (data.order_number && data.total_amout === 0) {
+                data.status = 'done'
+              }
             } else {
               data.total_amount = total
             }
-          }
-          data.total_amount = total
-          context.discount = discount || 0
-
-          const usr = await req.payload.findByID({
-            collection: 'users',
-            id: data.user,
-          })
-
-          if (data.order_number && data.total_amount > 0) {
-            const res = await fetch(`${process.env.MIDTRANS_API_URL}`, {
-              method: 'POST',
-              headers: {
-                Accept: 'application/json',
-                Authorization: `Basic ${process.env.AUTH_TOKEN}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                transaction_details: {
-                  order_id: `${data.order_number}`,
-                  gross_amount: Number(data.total_amount),
-                },
-                customer_details: {
-                  first_name: `${splitName(usr.fullname)}`,
-                  last_name: `${splitName(usr.fullname)}`,
-                  email: `${usr.email}`,
-                  phone: `${usr.phone}`,
-                },
-              }),
-            }).then((res) => {
-              return res.json()
-            })
-
-            data.payment_token = res.token
-            data.payment_redirect_url = res.redirect_url
+            return data
+          } catch (e) {
+            console.log(e)
           }
         }
-        return data
       },
     ],
     afterChange: [
@@ -338,9 +319,9 @@ const Order: CollectionConfig = {
             data: {
               order: doc.id,
               order_number: doc.order_number,
-              coupon: doc.coupon_code.id || '',
+              coupon: doc.coupon_code ? doc.coupon_code : '',
               change_type: operation,
-              original_price: doc.total_amount + context.discount,
+              original_price: doc.total_amount + context.discount || 0,
               discounted_price: (context.discount as number) || 0,
               user: context.user_id as string,
               status: doc.status,
@@ -352,7 +333,7 @@ const Order: CollectionConfig = {
             data: {
               order: doc.id,
               order_number: doc.order_number,
-              coupon: doc.coupon_code.id || '',
+              coupon: doc.coupon_code || '',
               change_type: operation,
               original_price: doc.original_price,
               discounted_price: doc.original_price - doc.total_amount,
