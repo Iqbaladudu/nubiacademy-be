@@ -197,14 +197,10 @@ const Order: CollectionConfig = {
             let discount = 0
             let coupon
             context.discount = null
-            console.log()
             context.user_id = data.user
-            if (
-              data.item_to_purchase
-            ) {
-              switch (data.item_to_purchase_type) {
-                case 'course':
-                  if (req.user?.collection === "admin") {
+            if (data.item_to_purchase) {
+              if (data.item_to_purchase_type === 'course') {
+                if (req.user?.collection === 'admin') {
                   const course = await req.payload.findByID({
                     collection: 'course',
                     id: data.item_to_purchase.value.toString(),
@@ -213,38 +209,36 @@ const Order: CollectionConfig = {
                   if (course && course.price) {
                     total += course.price
                   }
-                  } else if (req.user?.collection === "users") {
-                    const course = await req.payload.findByID({
-                      collection: 'course',
-                      id: data.item_to_purchase,
-                    })
-                    data.original_price = course.price
-                    if (course && course.price) {
-                      total += course.price
-                    }
+                } else if (req.user?.collection === 'users') {
+                  const course = await req.payload.findByID({
+                    collection: 'course',
+                    id: data.item_to_purchase.value.toString(),
+                  })
+                  data.original_price = course.price
+                  if (course && course.price) {
+                    total += course.price
                   }
-                  return
-                case 'event':
-                  if (req.user?.collection === "admin") {
-                    const event = await req.payload.findByID({
-                      collection: 'events',
-                      id: data.item_to_purchase.value.toString(),
-                    })
-                    if (event && event.pricing.discountedPrice) {
+                }
+              } else if (data.item_to_purchase_type === 'event') {
+                if (req.user?.collection === 'admin') {
+                  const event = await req.payload.findByID({
+                    collection: 'events',
+                    id: data.item_to_purchase.value.toString(),
+                  })
+                  if (event && event.pricing.discountedPrice) {
                     data.original_price = event.pricing.discountedPrice
-                      total += data.original_price
-                    }
-                  } else if (req.user?.collection === "users") {
-                    const event = await req.payload.findByID({
-                      collection: 'events',
-                      id: data.item_to_purchase,
-                    })
-                    if (event && event.pricing.discountedPrice) {
-                      data.original_price = event.pricing.discountedPrice
-                      total += data.original_price
-                    }
+                    total += data.original_price
                   }
-                  return
+                } else if (req.user?.collection === 'users') {
+                  const event = await req.payload.findByID({
+                    collection: 'events',
+                    id: data.item_to_purchase.value.toString(),
+                  })
+                  if (event && event.pricing.discountedPrice) {
+                    data.original_price = event.pricing.discountedPrice
+                    total += data.original_price
+                  }
+                }
               }
             }
 
@@ -326,7 +320,7 @@ const Order: CollectionConfig = {
           } catch (e) {
             console.log(e)
           }
-         }
+        }
       },
     ],
     afterChange: [
@@ -371,8 +365,8 @@ const Order: CollectionConfig = {
     update: () => true,
     delete: () => {
       return true
-    }
-  }
+    },
+  },
 }
 
 export default Order

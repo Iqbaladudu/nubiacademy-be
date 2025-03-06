@@ -182,7 +182,7 @@ const Events: CollectionConfig = {
                 },
               },
               {
-                event_item: {
+                item_to_purchase: {
                   equals: doc.id,
                 },
               },
