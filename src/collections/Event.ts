@@ -5,6 +5,9 @@ const Events: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
   },
+  access: {
+    read: () => true,
+  },
   fields: [
     {
       name: 'title',
@@ -178,6 +181,12 @@ const Events: CollectionConfig = {
           required: true,
         },
         {
+          name: 'roundDescription',
+          type: 'text',
+          label: 'Round Description',
+          required: true,
+        },
+        {
           name: 'startTime',
           type: 'date',
           label: 'Start Time',
@@ -219,7 +228,7 @@ const Events: CollectionConfig = {
                 },
               },
               {
-                item_to_purchase: {
+                'item_to_purchase.value': {
                   equals: doc.id,
                 },
               },
