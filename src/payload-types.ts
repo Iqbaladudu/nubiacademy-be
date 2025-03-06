@@ -168,6 +168,7 @@ export interface AdminAuthOperations {
 export interface Event {
   id: string;
   title: string;
+  slug?: string | null;
   category: 'workshop' | 'bootcamp';
   description?: string | null;
   description_long?: {
@@ -670,6 +671,7 @@ export interface PayloadMigration {
  */
 export interface EventsSelect<T extends boolean = true> {
   title?: T;
+  slug?: T;
   category?: T;
   description?: T;
   description_long?: T;

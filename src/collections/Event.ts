@@ -25,8 +25,8 @@ const Events: CollectionConfig = {
         beforeValidate: [
           ({ data, siblingData }) => {
             // If there's data for the referenced field, generate the slug
-            if (siblingData['name']) {
-              return siblingData['name']
+            if (siblingData['title']) {
+              return siblingData['title']
                 .toLowerCase()
                 .replace(/ /g, '-')
                 .replace(/[^\w-]+/g, '')
